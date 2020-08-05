@@ -31,7 +31,7 @@ python gdcp.py move -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFj
 
 * Link file 1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A in folder 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl without removing it from its current folder (create an alias).  Note that if you delete this file, it will be removed from all folders it is linked to.     
 ```
-python gdcp.py move -l -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A
+python gdcp.py move -k -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A
 ```
 
 * BE CAREFUL WITH THIS ONE -- when its gone its gone!! If the file is in multiple folders, it will be deleted from all.  
