@@ -105,7 +105,7 @@ class Gdcp(object):
             f = GdcpFile(self, gid=_id)
             f.delete()
 
-    def move(self, parent, linkIt, ids=None): #CJK added - called by cli_move
+    def move(self, parent, linkIt, ids=None): #CJK added - called by cli_updateParent
         if not ids:
             ids = []
         for _id in ids:
@@ -435,23 +435,29 @@ class GdcpFile(object):
             print("File is a Folder (not deleting).")
 
     def copy(self,parent,copy_name): #CJK added called by gdcp.copy(...)
-        if not self._is_folder():
+        if not self._is_folder(): #only do this if its a file
             if not copy_name:
                 print("No name specified for copied file (not copying)")
                 return
+            #make a copy of this (self) file (self.id)
             copied_file = {'title': copy_name}
             request = self.drive.auth.service.files().copy( fileId=self.id, body=copied_file )
             resp = execute_request(request)
-            print(resp)
+            newID = resp['id']
+            #now move it to the folder passed in (parent)
+            gdcp = self.gdcp
+            gdcp.move(parent, False, [newID])
 
     def move(self,parent,linkIt): #CJK added called by gdcp.move(...)
-        if not self._is_folder():
+        if not self._is_folder(): #only do this if its a file
+            #get the list of the current parent folders
             prevpar = self.metadata["parents"]
             parlist = ""
             for ele in prevpar:
                 if parlist != "":
                     parlist += ","
                 parlist += "{}".format(str(ele["id"]))
+            #now move or link the file using the new parent passed in
             if parlist != "":
                 if linkIt: #link the file to another folder
                     request = self.drive.auth.service.files().update( fileId=self.id, addParents=parent )
@@ -1227,11 +1233,6 @@ def cli():
         action="append",
         help="""File or folder ID. If not specified listing starts at Google
                 Drive root. - to read a list of IDs from STDIN.""")
-    #parser_list.add_argument( #repeat of the above (same args) //CJK
-        #"-i", "--id",
-        #default=[],
-        #action="append",
-        #help="""File ID. Must be specified """)
     parser_list.set_defaults(func=cli_list)
 
     # COPY - CJK added
