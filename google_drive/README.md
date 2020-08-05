@@ -2,7 +2,7 @@
 
 gdcp.py in this repo is an extension of [gdcp](https://github.com/ctberthiaume/gdcp.git) and a python interface to the Google Drive command line interface (CLI).  The extensions include support for delete and copy operations. The original version can be found at the github repo above or in this repo as file gdcp_orig.
 
-See [Readme_gdcp.md]() for installation instructions and setup, as it is the same as for gdcp.
+See [Readme](https://github.com/ctberthiaume/gdcp.git) for gdcp.md for the installation instructions and setup, as it is the same as for gdcp.
 
 You get the file URLs by going to Google Drive, opening the file and cutting/pasting the URL.  To get the folder ID, go to Google Drive, navigate to the folder and when in it, view the URL and cut/past the final long string that follows the last forward slash in the URL.  Your root folder does not have such a folder ID exposed in the URL -- if you want to move/copy a file to the root folder, just leave off the folder ID and the tool will find the root folder for you.
 
