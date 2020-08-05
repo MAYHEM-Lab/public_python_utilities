@@ -1,6 +1,7 @@
 # gdcp.py
 
 gdcp.py in this repo is an extension of [gdcp](https://github.com/ctberthiaume/gdcp.git) and a python interface to the Google Drive command line interface (CLI).  The extensions include support for delete and copy operations. The original version can be found at the github repo above or in this repo as file gdcp_orig.
+Both use [v2](https://developers.google.com/resources/api-libraries/documentation/drive/v2/python/latest/drive_v2.files.html) of the Google Drive [API](https://developers.google.com/drive/api/v2/about-sdk).
 
 See the [Readme](https://github.com/ctberthiaume/gdcp.git) for gdcp.md for the installation instructions and setup, as it is the same as for gdcp.
 

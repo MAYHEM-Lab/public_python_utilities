@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 
-#google drive API: https://developers.google.com/resources/api-libraries/documentation/drive/v2/python/latest/drive_v2.files.html
+#We use v2 of the google drive API:
+#https://developers.google.com/resources/api-libraries/documentation/drive/v2/python/latest/drive_v2.files.html
 
 import apiclient.errors
 import apiclient.http
