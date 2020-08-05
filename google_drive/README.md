@@ -17,3 +17,20 @@ gdcp version 0.7.13
 
 gdcp list -i https://drive.google.com/drive/u/0/folders/XXXXXXX
 
+Extended operations:   
+
+* Move file 1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A to folder 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl:     
+```
+python gdcp.py move -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A -p 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl
+```
+
+* Move file 1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A to the root folder:      
+```
+python gdcp.py move -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A
+```
+
+* BE CAREFUL WITH THIS ONE -- when its gone its gone!!   
+Delete file 1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A:    
+```
+python gdcp.py delete -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A
+```
