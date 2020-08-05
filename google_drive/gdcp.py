@@ -1,5 +1,7 @@
 #!/usr/bin/env python2.7
 
+#google drive API: https://developers.google.com/resources/api-libraries/documentation/drive/v2/python/latest/drive_v2.files.html
+
 import apiclient.errors
 import apiclient.http
 from argparse import ArgumentDefaultsHelpFormatter
@@ -34,7 +36,7 @@ import warnings
 CLIENT_ID = None
 CLIENT_SECRET = None
 
-VERSION = "0.7.13"
+VERSION = "0.8.1"
 PROJ = "gdcp"  # name of this project
 CHUNKSIZE = 2 ** 20 * 64  # 64 MiB chunks
 
@@ -102,6 +104,20 @@ class Gdcp(object):
         for _id in ids:
             f = GdcpFile(self, gid=_id)
             f.delete()
+
+    def move(self, parent, linkIt, ids=None): #CJK added - called by cli_move
+        if not ids:
+            ids = []
+        for _id in ids:
+            f = GdcpFile(self, gid=_id)
+            f.move(parent,linkIt)
+
+    def copy(self, parent, copy_name, ids=None): #CJK added - called by cli_copy
+        if not ids:
+            ids = []
+        for _id in ids:
+            f = GdcpFile(self, gid=_id)
+            f.copy(parent,copy_name)
 
     def list(self, ids=None, json_flag=False, depth=0):
         if not ids:
@@ -414,7 +430,39 @@ class GdcpFile(object):
         if not self._is_folder():
             request = self.drive.auth.service.files().delete( fileId=self.id )
             resp = execute_request(request)
+            #print(resp)
+        else:
+            print("File is a Folder (not deleting).")
+
+    def copy(self,parent,copy_name): #CJK added called by gdcp.copy(...)
+        if not self._is_folder():
+            if not copy_name:
+                print("No name specified for copied file (not copying)")
+                return
+            copied_file = {'title': copy_name}
+            request = self.drive.auth.service.files().copy( fileId=self.id, body=copied_file )
+            resp = execute_request(request)
             print(resp)
+
+    def move(self,parent,linkIt): #CJK added called by gdcp.move(...)
+        if not self._is_folder():
+            prevpar = self.metadata["parents"]
+            parlist = ""
+            for ele in prevpar:
+                if parlist != "":
+                    parlist += ","
+                parlist += "{}".format(str(ele["id"]))
+            if parlist != "":
+                if linkIt: #link the file to another folder
+                    request = self.drive.auth.service.files().update( fileId=self.id, addParents=parent )
+                else: #move
+                    request = self.drive.auth.service.files().update( fileId=self.id, addParents=parent, removeParents=parlist )
+
+                resp = execute_request(request)
+            else:
+                print("Unable to acquire current parent list (not moving).")
+        else:
+            print("File is a Folder (not moving).")
 
     def list(self, json_flag=False, depth=0, predecessors=""):
         """
@@ -1179,20 +1227,66 @@ def cli():
         action="append",
         help="""File or folder ID. If not specified listing starts at Google
                 Drive root. - to read a list of IDs from STDIN.""")
+    #parser_list.add_argument( #repeat of the above (same args) //CJK
+        #"-i", "--id",
+        #default=[],
+        #action="append",
+        #help="""File ID. Must be specified """)
     parser_list.set_defaults(func=cli_list)
 
+    # COPY - CJK added
+    parser_copy = subparsers.add_parser(
+        "copy",
+        help="""Copy a file (folders are not supported) in Google Drive. """,
+        formatter_class=ArgumentDefaultsHelpFormatter,
+        parents=[parent])
+    parser_copy.add_argument(
+        "-i", "--id",
+        default=[],
+        action="append",
+        help="""File ID. Must be specified.""")
+    parser_copy.add_argument(
+        "-n", "--copy_name",
+        default=None,
+        help="""New file name for copy. Must be specified.""")
+    parser_copy.add_argument( 
+        "-p", "--parent", 
+        default = "root",
+        help="""Parent ID, i.e. containing folder ID, where to copy the file to. If no ID is specified, the file will be placed in root folder.""")
+    parser_copy.set_defaults(func=cli_copy)
+    # MOVE - CJK added
+    parser_move = subparsers.add_parser(
+        "move",
+        help="""Move a file (folders are not supported) in Google Drive. """,
+        formatter_class=ArgumentDefaultsHelpFormatter,
+        parents=[parent])
+    parser_move.add_argument(
+        "-i", "--id",
+        default=[],
+        action="append",
+        help="""File ID. Must be specified""")
+    parser_move.add_argument( 
+        "-p", "--parent", 
+        default = "root",
+        help="""Parent (folder) ID, i.e. containing folder ID, where to move the file to. If no ID is specified, the file will be placed in root folder.""")
+    parser_move.add_argument( 
+        "-k", "--linkIt", 
+        default=False,
+        action="store_true",
+        help="""Use this argument to link the file to new folder (else move it)""")
+    parser_move.set_defaults(func=cli_updateParent)
     # DELETE - CJK added
-    parser_list = subparsers.add_parser(
+    parser_delete = subparsers.add_parser(
         "delete",
         help="""Delete a file (folders are not supported) in Google Drive. """,
         formatter_class=ArgumentDefaultsHelpFormatter,
         parents=[parent])
-    parser_list.add_argument(
+    parser_delete.add_argument(
         "-i", "--id",
         default=[],
         action="append",
-        help="""File ID. Must be specified """)
-    parser_list.set_defaults(func=cli_delete)
+        help="""File ID. Must be specified.""")
+    parser_delete.set_defaults(func=cli_delete)
 
     # Download
     parser_download = subparsers.add_parser(
@@ -1319,6 +1413,16 @@ def cli_delete(args): #CJK added
     ids = parse_id_args(args.id)
     gdcp = Gdcp(args.drive)
     gdcp.delete(ids=ids)
+
+def cli_updateParent(args): #CJK added (for file move)
+    ids = parse_id_args(args.id)
+    gdcp = Gdcp(args.drive)
+    gdcp.move(parent=args.parent,ids=ids,linkIt=args.linkIt)
+
+def cli_copy(args): #CJK added (for file copy)
+    ids = parse_id_args(args.id)
+    gdcp = Gdcp(args.drive)
+    gdcp.copy(parent=args.parent,copy_name=args.copy_name,ids=ids)
 
 def cli_download(args):
     gdcp = Gdcp(args.drive, excludes=args.excludes, include=args.invert_excludes,
