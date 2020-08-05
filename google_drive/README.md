@@ -4,6 +4,8 @@ gdcp.py in this repo is an extension of [gdcp](https://github.com/ctberthiaume/g
 
 See [Readme_gdcp.md]() for installation instructions and setup, as it is the same as for gdcp.
 
+You get the file URLs by going to Google Drive, opening the file and cutting/pasting the URL.  To get the folder ID, go to Google Drive, navigate to the folder and when in it, view the URL and cut/past the final long string that follows the last forward slash in the URL.  Your root folder does not have such a folder ID exposed in the URL -- if you want to move/copy a file to the root folder, just leave off the folder ID and the tool will find the root folder for you.
+
 # usage (testing)
 
 python test_gdcp.py
@@ -19,23 +21,28 @@ gdcp list -i https://drive.google.com/drive/u/0/folders/XXXXXXX
 
 Extended operations:   
 
-* Move file 1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A to folder 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl:     
+* Copy the file at URL https://docs.google.com/document/d/1DSEWBvjWqUtvENXWO-kdQGjkezzY4CrO5Wh8cmBxliM (-i argument) to new file named newname (-n argument) and place it in the folder identified by ID 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl
+```
+python gdcp.py copy -i https://docs.google.com/document/d/1DSEWBvjWqUtvENXWO-kdQGjkezzY4CrO5Wh8cmBxliM -n "newname" -p 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl
+```
+
+* Move file https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A to folder with ID 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl     
 ```
 python gdcp.py move -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A -p 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl
 ```
 
-* Move file 1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A to the root folder:      
+* Move file https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A to the root folder      
 ```
 python gdcp.py move -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A
 ```
 
-* Link file 1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A in folder 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl without removing it from its current folder (create an alias).  Note that if you delete this file, it will be removed from all folders it is linked to.     
+* Link the file https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A into the folder with ID 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl without removing it from its current folder (i.e. create an alias).  Note that if you delete this file, it will be removed from all folders it is linked to and located in.  The only difference here is the use of the -k option.  You can leave off the -p option if you want to link the file in your root folder.
 ```
-python gdcp.py move -k -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A
+python gdcp.py move -k -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A -p 1kurav0jGmZfP3ZLhs2niVXfAj2tYYoLl
 ```
 
 * BE CAREFUL WITH THIS ONE -- when its gone its gone!! If the file is in multiple folders, it will be deleted from all.  
-Delete file 1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A:    
+Delete file https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A    
 ```
 python gdcp.py delete -i https://docs.google.com/document/d/1siMp1RA8azMb7t0UppYFjT_a9J-dy7BTjAqCCxZyS-A
 ```
