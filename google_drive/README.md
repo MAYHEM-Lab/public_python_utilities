@@ -16,7 +16,7 @@ python test_gdcp.py
 usage: gdcp.py [-h] {version,list,delete,download,upload,transfer} ...
 
 python gdcp.py version  
-gdcp version 0.7.13
+gdcp version 0.8.1
 
 gdcp list -i https://drive.google.com/drive/u/0/folders/XXXXXXX
 
