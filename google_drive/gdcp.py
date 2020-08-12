@@ -484,7 +484,17 @@ class GdcpFile(object):
                          new_pre = self.title
                      else:
                          new_pre = predecessors + "/" + self.title
-                     lst += c.get_list(depth-1, new_pre)
+                     tmplist = c.get_list(depth-1, new_pre)
+                     #add it to lst if not already there
+                     for tmpele in tmplist:
+                         breakflag = False
+                         for myele in lst:
+                             if tmpele['id'] == myele['id']:
+                                 breakflag = True
+                                 break
+                         if not breakflag: #not found in lst so add it
+                             lst.append(tmpele)
+                          
         #add file or folder
         fid = str(self.metadata["id"])
         isFolder = str(self._is_folder()).lower()
