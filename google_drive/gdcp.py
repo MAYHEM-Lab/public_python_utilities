@@ -471,6 +471,32 @@ class GdcpFile(object):
         else:
             print("File is a Folder (not moving).")
 
+    def get_list(self, depth=0, predecessors=""): #added by CJK
+        """
+        Return a list of tuples for each non-folder file below up to depth
+        """
+        lst = []
+        if depth >= 0:
+            if self._is_folder():
+                 children = self._get_children()
+                 for c in children:
+                     if not predecessors:
+                         new_pre = self.title
+                     else:
+                         new_pre = predecessors + "/" + self.title
+                     lst += c.get_list(depth-1, new_pre)
+        #add file or folder
+        fid = str(self.metadata["id"])
+        isFolder = str(self._is_folder()).lower()
+        fname = str(self.metadata["title"])
+        parents = self.metadata["parents"]
+        plist = []
+        for pele in parents:
+            plist.append(pele['id'])
+        thisele = { "id": fid, "folder": isFolder, "name": fname, "parents": plist }
+        lst.append(thisele)
+        return lst
+
     def list(self, json_flag=False, depth=0, predecessors=""):
         """
         Print file listings starting at and including self.
