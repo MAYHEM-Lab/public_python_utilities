@@ -120,6 +120,13 @@ class Gdcp(object):
             f = GdcpFile(self, gid=_id)
             f.copy(parent,copy_name)
 
+    def mkdir(self, path_name, parent): #CJK added - called by cli_mkdir
+        dirs = path_name.strip().split('/')
+        newpar = parent
+        for subdir in dirs:
+            f = GdcpFile(self, gid=newpar)
+            newpar = f.mkdir(subdir)
+
     def list(self, ids=None, json_flag=False, depth=0):
         if not ids:
             ids = []
@@ -431,9 +438,30 @@ class GdcpFile(object):
         if not self._is_folder():
             request = self.drive.auth.service.files().delete( fileId=self.id )
             resp = execute_request(request)
-            #print(resp)
         else:
             print("File is a Folder (not deleting).")
+
+    def mkdir(self,subdir): #CJK added called by gdcp.mkdir(...)
+        """
+        Create subdir in this folder if it does not exist
+	Either way return its ID or a negative number on error 
+        """
+        if not subdir:
+            return -2
+        if not self._is_folder():
+            return -1
+        #see if the folder exists first
+        fnames = self.get_list()  #returns list of{'folder': 'true', 'parents': [u'0AMD3WEaqMKIwUk9PVA'], 'id': '1QLtA9z5KiBDa5iNsyW0qN-zWI_kaoZ9irJDgzZc0ZHg', 'name': 'Google Photos'}
+        for f in fnames:
+            if f['folder'] == 'true' and f['name'] == subdir:
+                return f['id']
+        body = {}
+        body["title"] = subdir
+        body["parents"] = [{"id": self.id}]
+        body["mimeType"] = "application/vnd.google-apps.folder"
+        request = self.drive.auth.service.files().insert(body=body)
+        response = execute_request(request)
+        return response["id"]
 
     def copy(self,parent,copy_name): #CJK added called by gdcp.copy(...)
         if not self._is_folder(): #only do this if its a file
@@ -1272,6 +1300,22 @@ def cli():
                 Drive root. - to read a list of IDs from STDIN.""")
     parser_list.set_defaults(func=cli_list)
 
+    # MKDIR - CJK added
+    parser_mkdir = subparsers.add_parser(
+        "mkdir",
+        help="""Create a directory path (X/Y/Z) under a folder (e.g. mkdir -p newfolder), if no folder is specified the path is created in the root folder.""",
+        formatter_class=ArgumentDefaultsHelpFormatter,
+        parents=[parent])
+    parser_mkdir.add_argument(
+        "-p", "--path",
+        default=None,
+        help="""folder path using form X/Y/Z must be specified. Front slashes indicate subdirectory name.""")
+    parser_mkdir.add_argument( 
+        "-i", "--id", 
+        default = "root",
+        help="""Parent IDs of the folders in which to place the directory path.""")
+    parser_mkdir.set_defaults(func=cli_mkdir)
+
     # COPY - CJK added
     parser_copy = subparsers.add_parser(
         "copy",
@@ -1461,6 +1505,10 @@ def cli_copy(args): #CJK added (for file copy)
     ids = parse_id_args(args.id)
     gdcp = Gdcp(args.drive)
     gdcp.copy(parent=args.parent,copy_name=args.copy_name,ids=ids)
+
+def cli_mkdir(args): #CJK added (for file copy)
+    gdcp = Gdcp(args.drive)
+    gdcp.mkdir(path_name=args.path,parent=args.id)
 
 def cli_download(args):
     gdcp = Gdcp(args.drive, excludes=args.excludes, include=args.invert_excludes,
