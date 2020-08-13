@@ -124,6 +124,8 @@ class Gdcp(object):
         dirs = path_name.strip().split('/')
         newpar = parent
         for subdir in dirs:
+            if subdir == '': #incase someone sent in /subdir string
+                continue
             f = GdcpFile(self, gid=newpar)
             newpar = f.mkdir(subdir)
 
