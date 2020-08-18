@@ -136,6 +136,11 @@ class Gdcp(object):
             f = GdcpFile(self, gid=_id)
             f.list(json_flag=json_flag, depth=depth)
 
+    def get_list(self, myid, json_flag=False, depth=0):#CJK added
+        f = GdcpFile(self, gid=myid)
+        lst = f.get_list(depth=depth)
+        return lst
+
     def transfer_ownership(self, ids, email):
         for _id in ids:
             f = GdcpFile(self, gid=_id)
@@ -466,18 +471,26 @@ class GdcpFile(object):
         return response["id"]
 
     def copy(self,parent,copy_name): #CJK added called by gdcp.copy(...)
+        #NOTE that the copy is performed ONLY if the file name does NOT exist
         if not self._is_folder(): #only do this if its a file
             if not copy_name:
                 print("No name specified for copied file (not copying)")
                 return
+            #only do this if copy_name is not already in the parent folder
+            fnames = self.gdcp.get_list(parent) #returns list of{'folder': 'true', 'parents': [u'0AMD3WEaqMKIwUk9PVA'], 'id': '1QLtA9z5KiBDa5iNsyW0qN-zWI_kaoZ9irJDgzZc0ZHg', 'name': 'Google Photos'}
+            for f in fnames:
+                if f['folder'] == 'false' and f['name'] == copy_name:
+                    print('{} already exists (not copying)'.format(copy_name))
+                    #file with name name is already there, don't add another copy
+                    return
+
             #make a copy of this (self) file (self.id)
             copied_file = {'title': copy_name}
             request = self.drive.auth.service.files().copy( fileId=self.id, body=copied_file )
             resp = execute_request(request)
             newID = resp['id']
-            #now move it to the folder passed in (parent)
-            gdcp = self.gdcp
-            gdcp.move(parent, False, [newID])
+            #now move it to the folder passed in (parent), via the gdcp
+            self.gdcp.move(parent, False, [newID])
 
     def move(self,parent,linkIt): #CJK added called by gdcp.move(...)
         if not self._is_folder(): #only do this if its a file
