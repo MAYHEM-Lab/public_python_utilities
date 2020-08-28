@@ -5,6 +5,7 @@
     License: UCSB BSD -- see LICENSE file in this repository
 '''
 
+import os
 from flask import Flask, request, jsonify
 app = Flask(__name__)
 
@@ -56,8 +57,14 @@ def index():
     return "<h1>Welcome to our server !!</h1>"
 
 def main():
-    # Threaded option for concurrent accesses, 0.0.0.0 host says listen to all network interfaces (leaving this off changes this to local (same host) only access, port is the port listened on -- this must be open in your firewall or mapped out if within a Docker container.
-    app.run(threaded=True, host='0.0.0.0', port=8112)
+    # Threaded option for concurrent accesses, 0.0.0.0 host says listen to all network interfaces (leaving this off changes this to local (same host) only access, port is the port listened on -- this must be open in your firewall or mapped out if within a Docker container. In Her
+oku, the heroku runtime sets this value via the PORT environment varia
+ble (you are not allowed to hard code it) so set it from this variable
+ and give a default value (8112) for when we execute locally.  Python 
+will tell us if the port is in use.  Start by using a value > 8000 as 
+these are likely to be available.
+    localport = int(os.getenv("PORT", 8112))
+    app.run(threaded=True, host='0.0.0.0', port=localport)
 
 if __name__ == '__main__':
     main()
