@@ -1,4 +1,4 @@
-# app.py
+# myapp.py
 ''' 
     This file is based off of this tutorial: https://stackabuse.com/deploying-a-flask-application-to-heroku/ 
     Author: Chandra Krintz, 
