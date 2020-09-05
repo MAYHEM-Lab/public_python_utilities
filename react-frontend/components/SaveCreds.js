@@ -31,7 +31,7 @@ function CredsForm(props) {
 		  console.log("SaveCreds saveCreds: Fetch Response data: ")
 		  console.log(data) //don't log an object WITH a string else the conversion won't work and object will not be dumped
 		  alert('response: ' + data["MESSAGE"])
-	  }).catch((error) => console.log("SaveCreds saveCreds: Fetch Failure: "+ error))
+	  }).catch((error) => console.log("SaveCreds saveCreds: Fetch Failure (is server up): "+ error))
     }
 
     //See this example on Creating Custom Hooks at  https://rangle.io/blog/simplifying-controlled-inputs-with-hooks/ to preclude the need to add a function handleChange for each onChange event
