@@ -40,6 +40,7 @@ def main():
         dbpwd = args["dbinfo"]["pwd"]
         dbhost = args["dbinfo"]["host"]
         DEBUG = args["DEBUG"]
+        dropit = args["droptable"]
     except Exception as e:
         print(e)
         print("Unable to parse json file as expected. \nUSAGE: python3 dbtemplate.py args.json")
@@ -74,6 +75,10 @@ def main():
     for row in rows:
         print(row)
 
+    if dropit:
+        cur = db.get_cursor() #start of table
+        cur.execute("DROP TABLE {}".format(tname))
+        db.commit()
     db.closeConnection()
 
 if __name__ == '__main__':
