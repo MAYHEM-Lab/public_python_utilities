@@ -1,0 +1,11 @@
+{ 
+  "_comment": "here is a comment",
+  "dbinfo": {
+    "db":"db_name",
+    "table": "table_name",
+    "user": "dbuser_name",
+    "pwd": "dbuser_pwd",
+    "host": "IP.IP.IP.IP"
+  },
+  "DEBUG": false
+}
