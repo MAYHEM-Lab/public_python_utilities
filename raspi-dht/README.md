@@ -1,6 +1,6 @@
 # Usage
 
-##Test program 1: instructables.py
+## Test program 1: instructables.py
 This is from [instructables.com](https://www.instructables.com/Raspberry-Pi-Tutorial-How-to-Use-the-DHT-22/)
 - This program hardcodes the pin number (DHT = 4)
 
@@ -14,7 +14,7 @@ Temp=22.9*C  Humidity=84.5%
 ```
 Press Ctrl-C to quit
 
-##Test program 2: getDHT22TempHumidity.py
+## Test program 2: getDHT22TempHumidity.py
 This is a modified version of an example from [Adafruit](https://github.com/adafruit/Adafruit_Python_DHT.git)
 
 `python3 getDHT22TempHumidity.py 2304 4`
