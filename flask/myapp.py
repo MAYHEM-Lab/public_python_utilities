@@ -14,6 +14,7 @@ app = Flask(__name__)
 DEBUG=True
 
 ### CORS section
+'''If your frontend app is running on a different port or domain (e.g., if it's served using a different web server or directly from the filesystem), you might encounter a CORS (Cross-Origin Resource Sharing) issue. This fixes it.  pip install flask-cors; in the app: CORS(app) or use the following '''
 @app.after_request
 def after_request_func(response):
     if DEBUG:
@@ -39,14 +40,30 @@ def after_request_func(response):
 '''
 Note that flask automatically redirects routes without a final slash (/) to one with a final slash (e.g. /getmsg redirects to /getmsg/). Curl does not handle redirects but instead prints the updated url. The browser handles redirects (i.e. takes them). You should always code your routes with both a start/end slash.
 '''
-@app.route('/api/getmsg/', methods=['GET'])
-def respond():
+@app.route('/api/user/', methods=['GET'])
+def getuser():
     # Retrieve the msg from url parameter of GET request 
     # and return MESSAGE response (or error or success)
     msg = request.args.get("msg", None)
 
     if DEBUG:
-        print("GET respond() msg: {}".format(msg))
+        print("GET getuser() msg: {}".format(msg))
+
+    response = {}
+    response["user"] = "cjk"
+    status = 200
+
+    # Return the response in json format with status code
+    return jsonify(response), status
+
+@app.route('/api/getmsg/', methods=['GET'])
+def getmsg():
+    # Retrieve the msg from url parameter of GET request 
+    # and return MESSAGE response (or error or success)
+    msg = request.args.get("msg", None)
+
+    if DEBUG:
+        print("GET getmsg() msg: {}".format(msg))
 
     response = {}
     if not msg: #invalid/missing message
@@ -99,7 +116,7 @@ def index():
 def main():
     '''The threaded option for concurrent accesses, 0.0.0.0 host says listen to all network interfaces (leaving this off changes this to local (same host) only access, port is the port listened on -- this must be open in your firewall or mapped out if within a Docker container. In Heroku, the heroku runtime sets this value via the PORT environment variable (you are not allowed to hard code it) so set it from this variable and give a default value (8118) for when we execute locally.  Python will tell us if the port is in use.  Start by using a value > 8000 as these are likely to be available.
     '''
-    localport = int(os.getenv("PORT", 8080))
+    localport = int(os.getenv("PORT", 8081))
     app.run(threaded=True, host='0.0.0.0', port=localport)
 
 if __name__ == '__main__':
