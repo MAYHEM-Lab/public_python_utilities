@@ -8,9 +8,10 @@
 import os, json
 from flask import Flask, request, jsonify, make_response
 
-#use this if linking to a reaact app on the same server
-#app = Flask(__name__, static_folder='./build', static_url_path='/')
-app = Flask(__name__)
+#use this if linking to a reaact app (built in build dir) on the same server
+app = Flask(__name__,static_folder='./build',static_url_path='/')
+#else use this:
+#app = Flask(__name__)
 DEBUG=True
 
 ### CORS section
